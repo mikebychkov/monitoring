@@ -1,0 +1,23 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: demo
+
+management:
+  server:
+    port: 8080
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    prometheus:
+      enable: true
+    health:
+      probes:
+        enabled: true
+  metrics:
+    tags:
+      application: demo-app     # common tag

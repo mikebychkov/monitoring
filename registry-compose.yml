@@ -1,0 +1,21 @@
+services:
+  registry:
+    image: registry:2
+    container_name: registry
+    restart: unless-stopped
+    ports:
+      - "443:443"   # expose TLS on standard HTTPS port
+    environment:
+      REGISTRY_HTTP_ADDR: ":443"
+      REGISTRY_HTTP_TLS_CERTIFICATE: /certs/domain.crt
+      REGISTRY_HTTP_TLS_KEY: /certs/domain.key
+      REGISTRY_STORAGE_DELETE_ENABLED: "true"
+      REGISTRY_HTTP_SECRET: "change-me-long-random-string"
+    volumes:
+      - ./registry_data:/var/lib/registry
+      - ./certs:/certs:ro
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "https://localhost/v2/_catalog"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
