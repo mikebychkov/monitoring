@@ -28,8 +28,10 @@ public class DemoApplication {
 
     private final Random random = new Random();
     private final AtomicInteger randomValue = new AtomicInteger(0);
+    private final AtomicInteger sumValue = new AtomicInteger(0);
 
     private Counter jobCounter;
+    private Counter sumCounter;
     private Timer jobTimer;
     private DistributionSummary batchSummary;
     private LongTaskTimer longTaskTimer;
@@ -45,8 +47,17 @@ public class DemoApplication {
              .description("Randomly generated value, updated every 5s")
              .register(registry);
 
+        Gauge.builder("demo_sum_gauge_random_value", sumValue, AtomicInteger::get)
+             .description("Sum of randomly generated value, updated every 5s")
+             .register(registry);
+
         jobCounter = Counter.builder("demo_counter_jobs_total")
                 .description("Total number of jobs processed")
+                .tag("type", "random")
+                .register(registry);
+
+        sumCounter = Counter.builder("demo_counter_sum_total")
+                .description("Total sum of jobs processed")
                 .tag("type", "random")
                 .register(registry);
 
@@ -70,7 +81,14 @@ public class DemoApplication {
         int r = random.nextInt(1, 100);
         randomValue.set(r);
 
-        jobCounter.increment(); 
+        sumValue.addAndGet(r);
+
+        sumCounter.increment(r);
+
+        r = random.nextInt(1, 5);
+        for (int i = 0; i < r; i++) {
+            jobCounter.increment(); 
+        }
     }
 
     @Scheduled(fixedRate = 7000) // every 7s

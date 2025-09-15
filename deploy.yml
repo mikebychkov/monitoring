@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: demo-app
-        image: registry.local/demo-app:3
+        image: registry.local/demo-app:5
         env:
         - name: SPRING_PROFILES_ACTIVE
           value: prod
